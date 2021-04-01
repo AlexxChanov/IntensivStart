@@ -25,5 +25,53 @@
         <item name="cornerSize">3%</item>
     </style>
 
+    <style name="ItemTvShowRootView">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginBottom">32dp</item>
+    </style>
 
+    //Tv shows screen
+
+    <style name="TvShowScreenRoot">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@color/mainFeedBackground</item>
+    </style>
+
+    <style name="TvShowScreensRecyclerView">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_margin">16dp</item>
+    </style>
+
+    //Tv shows item
+
+    <style name="TvShowItemsImage">
+        <item name="android:layout_height">200dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.App.CornerSize3Percent</item>
+    </style>
+
+    <style name="TvShowItemsTitleAndRatingContainer">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginTop">8dp</item>
+    </style>
+
+    <style name="TvShowItemsMoviesName">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="textAllCaps">true</item>
+    </style>
+
+    <style name="TvShowItemsRatingBar" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:progressBackgroundTint">@color/colorControlNormal</item>
+    </style>
 </resources>

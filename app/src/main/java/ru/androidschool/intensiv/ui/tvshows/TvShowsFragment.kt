@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.tv_shows_fragment.*
@@ -45,10 +44,9 @@ class TvShowsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tv_shows_recyclerview.layoutManager = LinearLayoutManager(context)
         tv_shows_recyclerview.adapter = adapter.apply { addAll(listOf()) }
 
-        val moviesList = MockRepository.getMovies().map{
+        val moviesList = MockRepository.getMovies().map {
                  TvShowCardContainer(it)
              }
         tv_shows_recyclerview.adapter = adapter.apply { addAll(moviesList) }
