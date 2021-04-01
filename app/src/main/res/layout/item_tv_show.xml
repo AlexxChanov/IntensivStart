@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ItemTvShowRootView"
+    android:orientation="vertical">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/item_tv_show_iv"
+        style="@style/TvShowItemsImage"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY" />
+
+    <LinearLayout
+        style="@style/TvShowItemsTitleAndRatingContainer"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/item_tv_show_name_tv"
+            style="@style/TvShowItemsMoviesName"
+            android:layout_weight="1"/>
+
+        <androidx.appcompat.widget.AppCompatRatingBar
+            android:id="@+id/item_tv_show_rating_bar"
+            style="@style/TvShowItemsRatingBar"
+            android:numStars="5"
+            android:stepSize="0.5" />
+
+    </LinearLayout>
+
+</LinearLayout>
