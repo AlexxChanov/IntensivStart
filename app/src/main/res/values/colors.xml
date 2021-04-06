@@ -18,6 +18,7 @@
     <color name="colorItemDisabled">#4a6e8a</color>
     <color name="textColorLight">#FFFFFF</color>
     <color name="textColorGrey">#999999</color>
+    <color name="colorTransparent">#00999999</color>
 
     <color name="favorite">#EC6E7D</color>
     <color name="selectedControlIndicator">#D6182A</color>

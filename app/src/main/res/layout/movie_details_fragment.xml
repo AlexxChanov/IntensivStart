@@ -7,27 +7,27 @@
     tools:context="ru.androidschool.intensiv.ui.movie_details.MovieDetailsFragment">
 
     <ImageButton
+        android:id="@+id/movie_detail_back_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:layout_margin="@dimen/material_margin_normal"
+        android:background="@color/colorTransparent"
         android:src="@drawable/ic_baseline_arrow_back_24"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="#00FFFFFF"
-        android:layout_margin="16dp"
-        android:elevation="2dp"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/movie_details_iv"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/dimens_0"
         android:scaleType="centerCrop"
-        tools:src="@drawable/placeholder"
         android:layout_alignParentTop="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/guideline"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/placeholder" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -38,7 +38,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="@dimen/dimens_0"
         android:layout_alignParentBottom="true"
         android:background="@color/blueDark"
         android:orientation="vertical"
@@ -50,17 +50,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/material_margin_normal"
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="0dp"
+                android:id="@+id/movie_details_title"
+                style="@style/MovieDetailsTitle"
+                android:layout_width="@dimen/dimens_0"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:textColor="@color/white"
-                android:textSize="22sp"
-                android:textStyle="bold"
                 tools:text="Aquaman" />
 
             <ImageView
@@ -76,21 +75,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/movie_details_watch_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_marginStart="16dp"
-                android:background="@drawable/moview_details_watch_btn_bg"
-                android:text="Смотреть"
-                android:textAllCaps="false"
-                android:textColor="@color/white" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
+                android:layout_marginStart="@dimen/material_margin_normal"
+                android:background="@drawable/movie_details_watch_btn_bg"
+                android:text="@string/watch"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:textColor="@color/white"
+                app:textAllCaps="false" />
 
             <androidx.appcompat.widget.AppCompatRatingBar
                 android:id="@+id/movie_details_rating_bar"
@@ -98,7 +93,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="@dimen/material_margin_normal"
                 android:numStars="5"
                 android:stepSize="0.5" />
         </RelativeLayout>
@@ -113,22 +108,22 @@
             android:id="@+id/movie_detail_actors_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" />
+            android:layout_marginStart="@dimen/material_margin_normal"
+            android:layout_marginEnd="@dimen/material_margin_normal" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="@dimen/material_margin_normal"
+            android:layout_marginTop="@dimen/material_margin_normal"
+            android:layout_marginEnd="@dimen/material_margin_normal"
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="50dp"
+                android:layout_width="@dimen/dimens_50"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:text="Студия"
+                android:layout_marginEnd="@dimen/material_margin_normal"
+                android:text="@string/studio"
                 android:textColor="@color/white" />
 
             <TextView
@@ -147,10 +142,10 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="50dp"
+                android:layout_width="@dimen/dimens_50"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:text="Жанр"
+                android:layout_marginEnd="@dimen/material_margin_normal"
+                android:text="@string/genre"
                 android:textColor="@color/white" />
 
             <TextView
@@ -164,16 +159,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginStart="@dimen/material_margin_normal"
+            android:layout_marginEnd="@dimen/material_margin_normal"
+            android:layout_marginBottom="@dimen/material_margin_large"
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="50dp"
+                android:layout_width="@dimen/dimens_50"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:text="Год"
+                android:layout_marginEnd="@dimen/material_margin_normal"
+                android:text="@string/year"
                 android:textColor="@color/white" />
 
             <TextView

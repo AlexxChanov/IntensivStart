@@ -20,4 +20,7 @@
     <dimen name="search_bar_height">56dp</dimen>
     <dimen name="min_height">100dp</dimen>
 
+    <!-- Movie details -->
+    <dimen name="dimens_0">0dp</dimen>
+    <dimen name="dimens_50">50dp</dimen>
 </resources>
