@@ -18,9 +18,9 @@ class MovieDetailsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getParcelable<Movie>(ARG_PARAM1)
-        }
+//        arguments?.let {
+//            param1 = it.getParcelable<Movie>(ARG_PARAM1)
+//        }
     }
 
     override fun onCreateView(
@@ -39,9 +39,9 @@ class MovieDetailsFragment : Fragment() {
 
     private fun setData(){
         movie_details_title.text = param1?.title
-        param1?.rating?.let {
-            movie_details_rating_bar.rating = param1?.rating!!
-        }
+//        param1?.rating?.let {
+//            movie_details_rating_bar.rating = param1?.rating!!
+//        }
 
         Picasso.get()
             .load(R.drawable.placeholder)

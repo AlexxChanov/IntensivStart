@@ -10,7 +10,7 @@ import ru.androidschool.intensiv.data.Movie
 class TvShowCardContainer(private val movie: Movie) : Item() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.item_tv_show_name_tv.text = movie.title
-        viewHolder.item_tv_show_rating_bar.rating = movie.rating
+  //      viewHolder.item_tv_show_rating_bar.rating = movie.rating
 
         Picasso.get()
             .load(R.drawable.placeholder)

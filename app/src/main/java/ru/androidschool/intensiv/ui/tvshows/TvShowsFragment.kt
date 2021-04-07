@@ -46,10 +46,10 @@ class TvShowsFragment : Fragment() {
 
         tv_shows_recyclerview.adapter = adapter.apply { addAll(listOf()) }
 
-        val moviesList = MockRepository.getMovies().map {
-                 TvShowCardContainer(it)
-             }
-        tv_shows_recyclerview.adapter = adapter.apply { addAll(moviesList) }
+//        val moviesList = MockRepository.getMovies().map {
+//                 TvShowCardContainer(it)
+//             }
+     //   tv_shows_recyclerview.adapter = adapter.apply { addAll(moviesList) }
     }
 
     companion object {

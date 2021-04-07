@@ -1,11 +1,7 @@
 package ru.androidschool.intensiv.ui.feed
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.View
-import android.view.ViewGroup
-import android.view.MenuInflater
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
@@ -15,17 +11,23 @@ import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.android.synthetic.main.feed_header.*
 import kotlinx.android.synthetic.main.search_toolbar.view.*
+import retrofit2.Call
+import retrofit2.Response
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MockRepository
 import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.data.MovieResponse
+import ru.androidschool.intensiv.network.MovieApiClient
 import ru.androidschool.intensiv.ui.afterTextChanged
 import timber.log.Timber
+
+private const val TAG = "FeedFragment"
 
 class FeedFragment : Fragment() {
 
     private val adapter by lazy {
         GroupAdapter<GroupieViewHolder>()
     }
+    private var playingMoviesList: List<Movie> = listOf()
 
     private val options = navOptions {
         anim {
@@ -47,7 +49,10 @@ class FeedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+       getPlayingMovies()
+    }
 
+    private fun initRecyclers(){
         // Добавляем recyclerView
         movies_recycler_view.layoutManager = LinearLayoutManager(context)
         movies_recycler_view.adapter = adapter.apply { addAll(listOf()) }
@@ -63,7 +68,7 @@ class FeedFragment : Fragment() {
         val moviesList = listOf(
             MainCardContainer(
                 R.string.recommended,
-                MockRepository.getMovies().map {
+                playingMoviesList.map {
                     MovieItem(it) { movie ->
                         openMovieDetails(
                             movie
@@ -80,7 +85,7 @@ class FeedFragment : Fragment() {
         val newMoviesList = listOf(
             MainCardContainer(
                 R.string.upcoming,
-                MockRepository.getMovies().map {
+                playingMoviesList.map {
                     MovieItem(it) { movie ->
                         openMovieDetails(movie)
                     }
@@ -91,10 +96,28 @@ class FeedFragment : Fragment() {
         adapter.apply { addAll(newMoviesList) }
     }
 
+    private fun getPlayingMovies(){
+        val call: retrofit2.Call<MovieResponse> = MovieApiClient.apiClient.getNowPlayingMovies()
+
+        call.enqueue(object : retrofit2.Callback<MovieResponse>{
+            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
+                if (response.isSuccessful){
+                 playingMoviesList = response.body()?.results!!
+                    initRecyclers()
+                }
+                Timber.d(response.message())
+            }
+            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                Timber.d("Error ${t.message}")
+            }
+
+        })
+    }
+
     private fun openMovieDetails(movie: Movie) {
-        val bundle = Bundle()
-        bundle.putParcelable(KEY_TITLE, movie)
-        findNavController().navigate(R.id.movie_details_fragment, bundle, options)
+//        val bundle = Bundle()
+//        bundle.putParcelable(KEY_TITLE, movie)
+//        findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 
     private fun openSearch(searchText: String) {
