@@ -28,6 +28,8 @@ class FeedFragment : Fragment() {
         GroupAdapter<GroupieViewHolder>()
     }
     private var playingMoviesList: List<Movie> = listOf()
+    private var popularMoviesList: List<Movie> = listOf()
+    private var upcomingMoviesList: List<Movie> = listOf()
 
     private val options = navOptions {
         anim {
@@ -49,10 +51,12 @@ class FeedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       getPlayingMovies()
+        getPlayingMovies()
+        getPopularMovies()
+        getUpcomingMovies()
     }
 
-    private fun initRecyclers(){
+    private fun initRecyclers() {
         // Добавляем recyclerView
         movies_recycler_view.layoutManager = LinearLayoutManager(context)
         movies_recycler_view.adapter = adapter.apply { addAll(listOf()) }
@@ -68,7 +72,7 @@ class FeedFragment : Fragment() {
         val moviesList = listOf(
             MainCardContainer(
                 R.string.recommended,
-                playingMoviesList.map {
+                popularMoviesList.map {
                     MovieItem(it) { movie ->
                         openMovieDetails(
                             movie
@@ -85,7 +89,7 @@ class FeedFragment : Fragment() {
         val newMoviesList = listOf(
             MainCardContainer(
                 R.string.upcoming,
-                playingMoviesList.map {
+                upcomingMoviesList.map {
                     MovieItem(it) { movie ->
                         openMovieDetails(movie)
                     }
@@ -96,17 +100,56 @@ class FeedFragment : Fragment() {
         adapter.apply { addAll(newMoviesList) }
     }
 
-    private fun getPlayingMovies(){
+    private fun getPlayingMovies() {
         val call: retrofit2.Call<MovieResponse> = MovieApiClient.apiClient.getNowPlayingMovies()
 
-        call.enqueue(object : retrofit2.Callback<MovieResponse>{
+        call.enqueue(object : retrofit2.Callback<MovieResponse> {
             override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                if (response.isSuccessful){
-                 playingMoviesList = response.body()?.results!!
+                if (response.isSuccessful) {
+                    playingMoviesList = response.body()?.results!!
                     initRecyclers()
                 }
                 Timber.d(response.message())
             }
+
+            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                Timber.d("Error ${t.message}")
+            }
+
+        })
+    }
+
+    private fun getPopularMovies() {
+        val call: retrofit2.Call<MovieResponse> = MovieApiClient.apiClient.getPopularMovies()
+
+        call.enqueue(object : retrofit2.Callback<MovieResponse> {
+            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
+                if (response.isSuccessful) {
+                    popularMoviesList = response.body()?.results!!
+                    initRecyclers()
+                }
+                Timber.d(response.message())
+            }
+
+            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                Timber.d("Error ${t.message}")
+            }
+
+        })
+    }
+
+    private fun getUpcomingMovies() {
+        val call: retrofit2.Call<MovieResponse> = MovieApiClient.apiClient.getUpcomingMovies()
+
+        call.enqueue(object : retrofit2.Callback<MovieResponse> {
+            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
+                if (response.isSuccessful) {
+                    upcomingMoviesList = response.body()?.results!!
+                    initRecyclers()
+                }
+                Timber.d(response.message())
+            }
+
             override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                 Timber.d("Error ${t.message}")
             }

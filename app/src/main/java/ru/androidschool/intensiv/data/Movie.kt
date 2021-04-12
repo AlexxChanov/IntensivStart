@@ -1,6 +1,7 @@
 package ru.androidschool.intensiv.data
 
 import com.google.gson.annotations.SerializedName
+import ru.androidschool.intensiv.network.MovieApiClient
 
 data class Movie(
     var title: String?,
@@ -25,7 +26,13 @@ data class Movie(
     @SerializedName("vote_count")
     val voteCount: Int,
     val video: Boolean
-)
+){
+    var poster : String = ""
+        get() = "https://image.tmdb.org/t/p/w500$posterPath"
+
+    val rating: Float
+        get() = voteAverage.div(2).toFloat()
+}
 
 /**
  *      "poster_path": "/e1mjopzAS2KNsvpbpahQ1a6SkSn.jpg",
