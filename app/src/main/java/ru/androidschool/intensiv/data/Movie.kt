@@ -1,8 +1,10 @@
 package ru.androidschool.intensiv.data
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 import ru.androidschool.intensiv.network.MovieApiClient
-
+@Parcelize
 data class Movie(
     var title: String?,
     @SerializedName("vote_average")
@@ -26,7 +28,7 @@ data class Movie(
     @SerializedName("vote_count")
     val voteCount: Int,
     val video: Boolean
-){
+) : Parcelable{
     var poster : String = ""
         get() = "https://image.tmdb.org/t/p/w500$posterPath"
 

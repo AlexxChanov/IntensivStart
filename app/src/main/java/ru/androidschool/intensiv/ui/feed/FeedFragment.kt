@@ -31,6 +31,10 @@ class FeedFragment : Fragment() {
     private var popularMoviesList: List<Movie> = listOf()
     private var upcomingMoviesList: List<Movie> = listOf()
 
+    lateinit var playingMoviesListCard: MainCardContainer
+    lateinit var popularMoviesListCard: MainCardContainer
+    lateinit var upcomingMoviesListCard: MainCardContainer
+
     private val options = navOptions {
         anim {
             enter = R.anim.slide_in_right
@@ -52,8 +56,6 @@ class FeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getPlayingMovies()
-        getPopularMovies()
-        getUpcomingMovies()
     }
 
     private fun initRecyclers() {
@@ -69,9 +71,9 @@ class FeedFragment : Fragment() {
         }
 
         // Используя Мок-репозиторий получаем фэйковый список фильмов
-        val moviesList = listOf(
+        popularMoviesListCard =
             MainCardContainer(
-                R.string.recommended,
+                R.string.popular,
                 popularMoviesList.map {
                     MovieItem(it) { movie ->
                         openMovieDetails(
@@ -80,13 +82,10 @@ class FeedFragment : Fragment() {
                     }
                 }.toList()
             )
-        )
-
-        movies_recycler_view.adapter = adapter.apply { addAll(moviesList) }
 
         // Используя Мок-репозиторий получаем фэйковый список фильмов
         // Чтобы отобразить второй ряд фильмов
-        val newMoviesList = listOf(
+        upcomingMoviesListCard =
             MainCardContainer(
                 R.string.upcoming,
                 upcomingMoviesList.map {
@@ -95,9 +94,20 @@ class FeedFragment : Fragment() {
                     }
                 }.toList()
             )
+
+        playingMoviesListCard =
+            MainCardContainer(
+                R.string.now_playing,
+                playingMoviesList.map {
+                    MovieItem(it) { movie ->
+                        openMovieDetails(
+                            movie
+                        )
+                    }
+                }.toList()
         )
 
-        adapter.apply { addAll(newMoviesList) }
+        adapter.apply { addAll(listOf(playingMoviesListCard,upcomingMoviesListCard,popularMoviesListCard)) }
     }
 
     private fun getPlayingMovies() {
@@ -107,7 +117,7 @@ class FeedFragment : Fragment() {
             override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
                 if (response.isSuccessful) {
                     playingMoviesList = response.body()?.results!!
-                    initRecyclers()
+                    getPopularMovies()
                 }
                 Timber.d(response.message())
             }
@@ -126,7 +136,7 @@ class FeedFragment : Fragment() {
             override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
                 if (response.isSuccessful) {
                     popularMoviesList = response.body()?.results!!
-                    initRecyclers()
+                    getUpcomingMovies()
                 }
                 Timber.d(response.message())
             }
@@ -158,9 +168,9 @@ class FeedFragment : Fragment() {
     }
 
     private fun openMovieDetails(movie: Movie) {
-//        val bundle = Bundle()
-//        bundle.putParcelable(KEY_TITLE, movie)
-//        findNavController().navigate(R.id.movie_details_fragment, bundle, options)
+        val bundle = Bundle()
+        bundle.putParcelable(KEY_TITLE, movie)
+        findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 
     private fun openSearch(searchText: String) {

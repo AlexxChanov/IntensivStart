@@ -101,8 +101,11 @@
         <TextView
             android:id="@+id/movie_details_description"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="@dimen/material_margin_normal"
+            android:textColor="@color/white"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/movie_detail_actors_rv"

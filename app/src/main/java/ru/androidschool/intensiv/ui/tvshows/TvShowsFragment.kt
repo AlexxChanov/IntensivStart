@@ -8,8 +8,12 @@ import androidx.fragment.app.Fragment
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.tv_shows_fragment.*
+import retrofit2.Call
+import retrofit2.Response
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MockRepository
+import ru.androidschool.intensiv.data.*
+import ru.androidschool.intensiv.network.MovieApiClient
+import timber.log.Timber
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -23,6 +27,8 @@ class TvShowsFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    lateinit var popularTvShows: MutableList<TvShow>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,13 +49,16 @@ class TvShowsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getPopularTvShows()
+    }
 
+    private fun init() {
         tv_shows_recyclerview.adapter = adapter.apply { addAll(listOf()) }
 
-//        val moviesList = MockRepository.getMovies().map {
-//                 TvShowCardContainer(it)
-//             }
-     //   tv_shows_recyclerview.adapter = adapter.apply { addAll(moviesList) }
+        val moviesList = popularTvShows.map {
+            TvShowCardContainer(it)
+        }
+        tv_shows_recyclerview.adapter = adapter.apply { addAll(moviesList) }
     }
 
     companion object {
@@ -61,5 +70,24 @@ class TvShowsFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    private fun getPopularTvShows() {
+        val call: retrofit2.Call<TvShowResponse> = MovieApiClient.apiClient.getPopularTvShows()
+
+        call.enqueue(object : retrofit2.Callback<TvShowResponse> {
+            override fun onResponse(call: Call<TvShowResponse>, response: Response<TvShowResponse>) {
+                if (response.isSuccessful) {
+                    popularTvShows = response.body()?.results!!
+                    init()
+                }
+                Timber.d(response.message())
+            }
+
+            override fun onFailure(call: Call<TvShowResponse>, t: Throwable) {
+                Timber.d("Error ${t.message}")
+            }
+
+        })
     }
 }

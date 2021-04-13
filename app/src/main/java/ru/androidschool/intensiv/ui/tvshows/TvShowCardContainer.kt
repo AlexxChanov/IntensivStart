@@ -6,14 +6,15 @@ import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.android.synthetic.main.item_tv_show.*
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.data.TvShow
 
-class TvShowCardContainer(private val movie: Movie) : Item() {
+class TvShowCardContainer(private val show: TvShow) : Item() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.item_tv_show_name_tv.text = movie.title
-  //      viewHolder.item_tv_show_rating_bar.rating = movie.rating
+        viewHolder.item_tv_show_name_tv.text = show.name
+        viewHolder.item_tv_show_rating_bar.rating = show.rating
 
         Picasso.get()
-            .load(R.drawable.placeholder)
+            .load(show.poster)
             .into(viewHolder.item_tv_show_iv)
     }
 
