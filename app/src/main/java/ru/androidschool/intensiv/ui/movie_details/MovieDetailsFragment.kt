@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.movie_details_fragment.*
 import retrofit2.Call
 import retrofit2.Response
@@ -75,40 +77,24 @@ class MovieDetailsFragment : Fragment() {
         }
     }
 
-    private fun getMoviesDetails() {
-        val call: retrofit2.Call<MovieDetails> = MovieApiClient.apiClient.getMoviesDetails(currentMovie!!.id)
-
-        call.enqueue(object : retrofit2.Callback<MovieDetails> {
-            override fun onResponse(call: Call<MovieDetails>, response: Response<MovieDetails>) {
-                if (response.isSuccessful) {
-                    moviesDetails = response.body()!!
-                    setData()
-                    getActors()
-                }
-                Timber.d(response.message())
-            }
-
-            override fun onFailure(call: Call<MovieDetails>, t: Throwable) {
-                Timber.d("Error ${t.message}")
-            }
-        })
+    private fun getMoviesDetails(){
+        MovieApiClient.apiClient.getMoviesDetails(currentMovie!!.id)
+            .subscribeOn(Schedulers.io())
+            .map { moviesDetails = it}
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { error -> Timber.d(error) }
+            .doOnComplete { getActors() }
+            .subscribe()
     }
 
-    private fun getActors() {
-        val call: retrofit2.Call<ActorsResponse> = MovieApiClient.apiClient.getActors(currentMovie!!.id)
-
-        call.enqueue(object : retrofit2.Callback<ActorsResponse> {
-            override fun onResponse(call: Call<ActorsResponse>, response: Response<ActorsResponse>) {
-                if (response.isSuccessful) {
-                    actorsList.addAll(response.body()!!.cast)
-                    setData()
-                }
-                Timber.d(response.message())
-            }
-
-            override fun onFailure(call: Call<ActorsResponse>, t: Throwable) {
-                Timber.d("Error ${t.message}")
-            }
-        })
+    private fun getActors(){
+        MovieApiClient.apiClient.getActors(currentMovie!!.id)
+            .subscribeOn(Schedulers.io())
+            .map { actorsList.addAll(it.cast) }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { error -> Timber.d(error) }
+            .doOnComplete { setData() }
+            .subscribe()
     }
+
 }

@@ -8,6 +8,8 @@ import androidx.navigation.navOptions
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.android.synthetic.main.feed_header.*
 import kotlinx.android.synthetic.main.search_toolbar.view.*
@@ -111,57 +113,31 @@ class FeedFragment : Fragment() {
     }
 
     private fun getPlayingMovies() {
-        val call: retrofit2.Call<MovieResponse> = MovieApiClient.apiClient.getNowPlayingMovies()
-
-        call.enqueue(object : retrofit2.Callback<MovieResponse> {
-            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                if (response.isSuccessful) {
-                    playingMoviesList = response.body()?.results!!
-                    getPopularMovies()
-                }
-                Timber.d(response.message())
-            }
-
-            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                Timber.d("Error ${t.message}")
-            }
-        })
+        MovieApiClient.apiClient.getNowPlayingMovies()
+            .subscribeOn(Schedulers.io())
+            .map { playingMoviesList = it.results }
+            .doOnError { error -> Timber.d("$error") }
+            .doOnComplete { getPopularMovies() }
+            .subscribe()
     }
 
-    private fun getPopularMovies() {
-        val call: retrofit2.Call<MovieResponse> = MovieApiClient.apiClient.getPopularMovies()
-
-        call.enqueue(object : retrofit2.Callback<MovieResponse> {
-            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                if (response.isSuccessful) {
-                    popularMoviesList = response.body()?.results!!
-                    getUpcomingMovies()
-                }
-                Timber.d(response.message())
-            }
-
-            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                Timber.d("Error ${t.message}")
-            }
-        })
+    private fun getPopularMovies(){
+        MovieApiClient.apiClient.getPopularMovies()
+            .subscribeOn(Schedulers.io())
+            .map { popularMoviesList = it.results }
+            .doOnError { error -> Timber.d(error) }
+            .doOnComplete { getUpcomingMovies() }
+            .subscribe()
     }
 
-    private fun getUpcomingMovies() {
-        val call: retrofit2.Call<MovieResponse> = MovieApiClient.apiClient.getUpcomingMovies()
-
-        call.enqueue(object : retrofit2.Callback<MovieResponse> {
-            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                if (response.isSuccessful) {
-                    upcomingMoviesList = response.body()?.results!!
-                    initRecyclers()
-                }
-                Timber.d(response.message())
-            }
-
-            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                Timber.d("Error ${t.message}")
-            }
-        })
+    private fun getUpcomingMovies(){
+        MovieApiClient.apiClient.getUpcomingMovies()
+            .subscribeOn(Schedulers.io())
+            .map { upcomingMoviesList = it.results }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { error -> Timber.d(error) }
+            .doOnComplete { initRecyclers() }
+            .subscribe()
     }
 
     private fun openMovieDetails(movie: Movie) {
