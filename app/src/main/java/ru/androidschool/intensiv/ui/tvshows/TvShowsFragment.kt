@@ -87,7 +87,6 @@ class TvShowsFragment : Fragment() {
             override fun onFailure(call: Call<TvShowResponse>, t: Throwable) {
                 Timber.d("Error ${t.message}")
             }
-
         })
     }
 }

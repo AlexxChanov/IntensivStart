@@ -1,11 +1,11 @@
 package ru.androidschool.intensiv.ui.feed
 
-import com.squareup.picasso.Picasso
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.android.synthetic.main.item_with_text.*
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.ui.setImage
 
 class MovieItem(
     private val content: Movie,
@@ -21,8 +21,6 @@ class MovieItem(
             onClick.invoke(content)
         }
 
-        Picasso.get()
-            .load(content.poster)
-            .into(viewHolder.image_preview)
+        setImage(content.poster, viewHolder.image_preview)
     }
 }

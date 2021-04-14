@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/min_height"
     android:layout_marginStart="@dimen/material_margin_normal"
     android:background="@color/colorTransparent"
     android:layout_height="match_parent"
@@ -8,11 +9,12 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/item_actor_image"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:scaleType="center"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize30Percent"
+        android:layout_width="@dimen/dimens_50"
+        android:layout_height="@dimen/dimens_50"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/circleImageView"
         />
+
     <TextView
         android:id="@+id/item_actor_name"
         android:layout_width="wrap_content"

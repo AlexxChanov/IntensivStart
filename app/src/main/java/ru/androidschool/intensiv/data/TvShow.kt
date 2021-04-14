@@ -18,7 +18,7 @@ data class TvShow(
     @SerializedName("vote_average")
     val voteAverage: Float
 ) : Parcelable {
-    var poster : String = ""
+    var poster: String = ""
         get() = "https://image.tmdb.org/t/p/w500$posterPath"
 
     val rating: Float

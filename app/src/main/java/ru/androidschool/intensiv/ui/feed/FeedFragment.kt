@@ -107,7 +107,7 @@ class FeedFragment : Fragment() {
                 }.toList()
         )
 
-        adapter.apply { addAll(listOf(playingMoviesListCard,upcomingMoviesListCard,popularMoviesListCard)) }
+        adapter.apply { addAll(listOf(playingMoviesListCard, upcomingMoviesListCard, popularMoviesListCard)) }
     }
 
     private fun getPlayingMovies() {
@@ -125,7 +125,6 @@ class FeedFragment : Fragment() {
             override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                 Timber.d("Error ${t.message}")
             }
-
         })
     }
 
@@ -144,7 +143,6 @@ class FeedFragment : Fragment() {
             override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                 Timber.d("Error ${t.message}")
             }
-
         })
     }
 
@@ -163,7 +161,6 @@ class FeedFragment : Fragment() {
             override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                 Timber.d("Error ${t.message}")
             }
-
         })
     }
 
