@@ -1,12 +1,184 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="ru.androidschool.intensiv.ui.movie_details.MovieDetailsFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <ImageButton
+        android:id="@+id/movie_detail_back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:layout_margin="@dimen/material_margin_normal"
+        android:background="@color/colorTransparent"
+        android:src="@drawable/ic_baseline_arrow_back_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <ImageView
+        android:id="@+id/movie_details_iv"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimens_0"
+        android:scaleType="centerCrop"
+        android:layout_alignParentTop="true"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/placeholder" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimens_0"
+        android:layout_alignParentBottom="true"
+        android:background="@color/blueDark"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/movie_details_iv">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/material_margin_normal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/movie_details_title"
+                style="@style/MovieDetailsTitle"
+                android:layout_width="@dimen/dimens_0"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                tools:text="Aquaman" />
+
+            <ImageView
+                android:id="@+id/movie_details_like_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_baseline_favorite_border_24" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/movie_details_watch_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="@dimen/material_margin_normal"
+                android:background="@drawable/movie_details_watch_btn_bg"
+                android:text="@string/watch"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:textColor="@color/white"
+                app:textAllCaps="false" />
+
+            <androidx.appcompat.widget.AppCompatRatingBar
+                android:id="@+id/movie_details_rating_bar"
+                style="@style/TvShowItemsRatingBar"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/material_margin_normal"
+                android:numStars="5"
+                android:stepSize="0.5" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/movie_details_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/movie_detail_actors_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/material_margin_normal"
+            android:layout_marginEnd="@dimen/material_margin_normal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/material_margin_normal"
+            android:layout_marginTop="@dimen/material_margin_normal"
+            android:layout_marginEnd="@dimen/material_margin_normal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dimens_50"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/material_margin_normal"
+                android:text="@string/studio"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/movie_details_studio_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColorGrey"
+                tools:text="Warner Bros" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dimens_50"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/material_margin_normal"
+                android:text="@string/genre"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/movie_details_genre_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColorGrey"
+                tools:text="Action, Adventure" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/material_margin_normal"
+            android:layout_marginEnd="@dimen/material_margin_normal"
+            android:layout_marginBottom="@dimen/material_margin_large"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/dimens_50"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/material_margin_normal"
+                android:text="@string/year"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/movie_details_year_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColorGrey"
+                tools:text="2018" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -93,7 +93,7 @@ class FeedFragment : Fragment() {
 
     private fun openMovieDetails(movie: Movie) {
         val bundle = Bundle()
-        bundle.putString(KEY_TITLE, movie.title)
+        bundle.putParcelable(KEY_TITLE, movie)
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 
