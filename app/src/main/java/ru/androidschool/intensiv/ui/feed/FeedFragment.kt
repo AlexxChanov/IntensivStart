@@ -2,25 +2,32 @@ package ru.androidschool.intensiv.ui.feed
 
 import android.os.Bundle
 import android.view.*
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
+import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.android.synthetic.main.feed_header.*
+import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.search_toolbar.*
 import kotlinx.android.synthetic.main.search_toolbar.view.*
-import retrofit2.Call
-import retrofit2.Response
+import kotlinx.android.synthetic.main.tv_shows_fragment.*
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
-import ru.androidschool.intensiv.data.MovieResponse
 import ru.androidschool.intensiv.network.MovieApiClient
 import ru.androidschool.intensiv.ui.afterTextChanged
+import ru.androidschool.intensiv.ui.tvshows.TvShowCardContainer
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 private const val TAG = "FeedFragment"
 
@@ -72,7 +79,6 @@ class FeedFragment : Fragment() {
             }
         }
 
-        // Используя Мок-репозиторий получаем фэйковый список фильмов
         popularMoviesListCard =
             MainCardContainer(
                 R.string.popular,
@@ -85,8 +91,6 @@ class FeedFragment : Fragment() {
                 }.toList()
             )
 
-        // Используя Мок-репозиторий получаем фэйковый список фильмов
-        // Чтобы отобразить второй ряд фильмов
         upcomingMoviesListCard =
             MainCardContainer(
                 R.string.upcoming,
@@ -107,9 +111,17 @@ class FeedFragment : Fragment() {
                         )
                     }
                 }.toList()
-        )
+            )
 
-        adapter.apply { addAll(listOf(playingMoviesListCard, upcomingMoviesListCard, popularMoviesListCard)) }
+        adapter.apply {
+            addAll(
+                listOf(
+                    playingMoviesListCard,
+                    upcomingMoviesListCard,
+                    popularMoviesListCard
+                )
+            )
+        }
     }
 
     private fun getPlayingMovies() {
@@ -121,7 +133,7 @@ class FeedFragment : Fragment() {
             .subscribe()
     }
 
-    private fun getPopularMovies(){
+    private fun getPopularMovies() {
         MovieApiClient.apiClient.getPopularMovies()
             .subscribeOn(Schedulers.io())
             .map { popularMoviesList = it.results }
@@ -130,7 +142,7 @@ class FeedFragment : Fragment() {
             .subscribe()
     }
 
-    private fun getUpcomingMovies(){
+    private fun getUpcomingMovies() {
         MovieApiClient.apiClient.getUpcomingMovies()
             .subscribeOn(Schedulers.io())
             .map { upcomingMoviesList = it.results }

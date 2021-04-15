@@ -4,49 +4,80 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
+import io.reactivex.Observable
+import io.reactivex.ObservableOnSubscribe
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.feed_header.*
+import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.search_toolbar.*
+import kotlinx.android.synthetic.main.tv_shows_fragment.*
 import ru.androidschool.intensiv.R
+import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.network.MovieApiClient
 import ru.androidschool.intensiv.ui.feed.FeedFragment.Companion.KEY_SEARCH
+import ru.androidschool.intensiv.ui.tvshows.TvShowCardContainer
+import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-class SearchFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
+class SearchFragment : Fragment(R.layout.fragment_search) {
+
+    private var searchingText: String? = null
+    private var searchingMovieslist = mutableListOf<Movie>()
+    lateinit var filterSubject: Observable<String>
+
+    private val adapter by lazy {
+        GroupAdapter<GroupieViewHolder>()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            searchingText = it.getString(KEY_SEARCH)
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val searchTerm = requireArguments().getString(KEY_SEARCH)
-        search_toolbar.setText(searchTerm)
+        handleMovieSearching()
+        search_toolbar.setText(searchingText)
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun init() {
+        movies_search_recycler_view.adapter = adapter.apply { addAll(listOf()) }
+
+        val moviesList = searchingMovieslist.map {
+            SearchingMoviesCardContainer(it)
+        }
+        movies_search_recycler_view.adapter = adapter.apply { addAll(moviesList) }
+    }
+
+    private fun handleMovieSearching() {
+        filterSubject = Observable.create(ObservableOnSubscribe<String> { emitter ->
+            search_edit_text.doAfterTextChanged{
+                emitter.onNext(it.toString())
             }
+        })
+
+        filterSubject
+            .subscribeOn(Schedulers.io())
+            .map { it.trim() }
+            .filter{it.length > 3}
+            .debounce(500, TimeUnit.MILLISECONDS)
+            .flatMap{ MovieApiClient.apiClient.searchMovie(it) }
+            .observeOn(AndroidSchedulers.mainThread())
+            .map {
+                searchingMovieslist.clear()
+                adapter.clear()
+                searchingMovieslist = it.results
+                init()
+                adapter.notifyDataSetChanged()
+                Timber.d(it.results.size.toString()) }
+            .subscribe({},{ error -> Timber.d(error)})
     }
 }
