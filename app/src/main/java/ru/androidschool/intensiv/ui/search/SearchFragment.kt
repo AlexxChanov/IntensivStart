@@ -1,9 +1,7 @@
 package ru.androidschool.intensiv.ui.search
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.xwray.groupie.GroupAdapter
@@ -12,15 +10,14 @@ import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.feed_header.*
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.search_toolbar.*
-import kotlinx.android.synthetic.main.tv_shows_fragment.*
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.network.MovieApiClient
 import ru.androidschool.intensiv.ui.feed.FeedFragment.Companion.KEY_SEARCH
-import ru.androidschool.intensiv.ui.tvshows.TvShowCardContainer
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -58,7 +55,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     private fun handleMovieSearching() {
-        filterSubject = Observable.create(ObservableOnSubscribe<String> { emitter ->
+        filterSubject = PublishSubject.create(ObservableOnSubscribe<String> { emitter ->
             search_edit_text.doAfterTextChanged{
                 emitter.onNext(it.toString())
             }
@@ -77,7 +74,19 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
                 searchingMovieslist = it.results
                 init()
                 adapter.notifyDataSetChanged()
+                setInProgress(false)
                 Timber.d(it.results.size.toString()) }
+            .doOnSubscribe { setInProgress(true) }
             .subscribe({},{ error -> Timber.d(error)})
+    }
+
+    private fun setInProgress(inProgress: Boolean){
+        if (inProgress){
+            search_fragment_loader.visibility = View.VISIBLE
+            movies_search_recycler_view.visibility = View.GONE
+        } else {
+            search_fragment_loader.visibility = View.GONE
+            movies_search_recycler_view.visibility = View.VISIBLE
+        }
     }
 }

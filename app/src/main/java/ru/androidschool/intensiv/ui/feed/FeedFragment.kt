@@ -2,8 +2,6 @@ package ru.androidschool.intensiv.ui.feed
 
 import android.os.Bundle
 import android.view.*
-import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
@@ -11,23 +9,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.android.synthetic.main.feed_header.*
-import kotlinx.android.synthetic.main.fragment_search.*
-import kotlinx.android.synthetic.main.search_toolbar.*
 import kotlinx.android.synthetic.main.search_toolbar.view.*
-import kotlinx.android.synthetic.main.tv_shows_fragment.*
 import ru.androidschool.intensiv.R
+import ru.androidschool.intensiv.data.FeedFragmentDataContainer
 import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.data.MovieResponse
 import ru.androidschool.intensiv.network.MovieApiClient
 import ru.androidschool.intensiv.ui.afterTextChanged
-import ru.androidschool.intensiv.ui.tvshows.TvShowCardContainer
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 private const val TAG = "FeedFragment"
 
@@ -39,6 +33,7 @@ class FeedFragment : Fragment() {
     private var playingMoviesList: List<Movie> = listOf()
     private var popularMoviesList: List<Movie> = listOf()
     private var upcomingMoviesList: List<Movie> = listOf()
+    lateinit var requestsContainer: FeedFragmentDataContainer
 
     lateinit var playingMoviesListCard: MainCardContainer
     lateinit var popularMoviesListCard: MainCardContainer
@@ -64,7 +59,7 @@ class FeedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getPlayingMovies()
+        zipRequestsFunction3()
     }
 
     private fun initRecyclers() {
@@ -124,32 +119,59 @@ class FeedFragment : Fragment() {
         }
     }
 
-    private fun getPlayingMovies() {
-        MovieApiClient.apiClient.getNowPlayingMovies()
-            .subscribeOn(Schedulers.io())
-            .map { playingMoviesList = it.results }
-            .doOnError { error -> Timber.d("$error") }
-            .doOnComplete { getPopularMovies() }
-            .subscribe()
-    }
+//    private fun getPlayingMovies() {
+//        MovieApiClient.apiClient.getNowPlayingMovies()
+//            .subscribeOn(Schedulers.io())
+//            .map { playingMoviesList = it.results }
+//            .doOnError { error -> Timber.d("$error") }
+//            .doOnComplete { getPopularMovies() }
+//            .subscribe()
+//    }
+//
+//    private fun getPopularMovies() {
+//        MovieApiClient.apiClient.getPopularMovies()
+//            .subscribeOn(Schedulers.io())
+//            .map { popularMoviesList = it.results }
+//            .doOnError { error -> Timber.d(error) }
+//            .doOnComplete { getUpcomingMovies() }
+//            .subscribe()
+//    }
+//
+//    private fun getUpcomingMovies() {
+//        MovieApiClient.apiClient.getUpcomingMovies()
+//            .subscribeOn(Schedulers.io())
+//            .map { upcomingMoviesList = it.results }
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .doOnError { error -> Timber.d(error) }
+//            .doOnComplete { initRecyclers() }
+//            .subscribe()
+//    }
 
-    private fun getPopularMovies() {
-        MovieApiClient.apiClient.getPopularMovies()
+    private fun zipRequestsFunction3(){
+        Observable.zip(MovieApiClient.apiClient.getUpcomingMovies(), MovieApiClient.apiClient.getPopularMovies(), MovieApiClient.apiClient.getNowPlayingMovies(),
+        Function3<MovieResponse, MovieResponse, MovieResponse, FeedFragmentDataContainer>{
+            upcoming, popular, nowPlaying ->  FeedFragmentDataContainer(upcoming.results, popular.results, nowPlaying.results)
+            })
             .subscribeOn(Schedulers.io())
-            .map { popularMoviesList = it.results }
-            .doOnError { error -> Timber.d(error) }
-            .doOnComplete { getUpcomingMovies() }
-            .subscribe()
-    }
-
-    private fun getUpcomingMovies() {
-        MovieApiClient.apiClient.getUpcomingMovies()
-            .subscribeOn(Schedulers.io())
-            .map { upcomingMoviesList = it.results }
+            .doOnSubscribe { setInProgress(true) }
+            .map { upcomingMoviesList = it.upcomingMovies
+            popularMoviesList = it.popularMovies
+            playingMoviesList = it.playingMovies}
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { error -> Timber.d(error) }
             .doOnComplete { initRecyclers() }
+            .doFinally { setInProgress(false) }
             .subscribe()
+    }
+
+    private fun setInProgress(inProgress: Boolean){
+        if (inProgress){
+            feed_fragment_loader.visibility = View.VISIBLE
+            movies_recycler_view.visibility = View.GONE
+        } else {
+            feed_fragment_loader.visibility = View.GONE
+            movies_recycler_view.visibility = View.VISIBLE
+        }
     }
 
     private fun openMovieDetails(movie: Movie) {

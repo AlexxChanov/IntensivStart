@@ -4,7 +4,15 @@
     style="@style/TvShowScreenRoot"
     tools:context="ru.androidschool.intensiv.ui.tvshows.TvShowsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+
+    <ProgressBar
+        android:id="@+id/tv_shows_loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tv_shows_recyclerview"
         style="@style/TvShowScreensRecyclerView"

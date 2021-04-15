@@ -11,8 +11,6 @@ import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.movie_details_fragment.*
-import retrofit2.Call
-import retrofit2.Response
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.*
 import ru.androidschool.intensiv.network.MovieApiClient
@@ -94,7 +92,18 @@ class MovieDetailsFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { error -> Timber.d(error) }
             .doOnComplete { setData() }
+            .doOnSubscribe { setInProgress(true) }
+            .doFinally { setInProgress(false) }
             .subscribe()
     }
 
+    private fun setInProgress(inProgress: Boolean){
+        if (inProgress){
+            movies_details_loader.visibility = View.VISIBLE
+            movie_detail_actors_rv.visibility = View.GONE
+        } else {
+            movies_details_loader.visibility = View.GONE
+            movie_detail_actors_rv.visibility = View.VISIBLE
+        }
+    }
 }

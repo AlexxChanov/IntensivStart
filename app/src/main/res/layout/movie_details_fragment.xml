@@ -106,6 +106,12 @@
             android:layout_margin="@dimen/material_margin_normal"
             android:textColor="@color/white"
             />
+        <ProgressBar
+            android:id="@+id/movies_details_loader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/movie_detail_actors_rv"

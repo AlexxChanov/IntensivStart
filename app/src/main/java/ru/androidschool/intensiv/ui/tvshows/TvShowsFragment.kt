@@ -9,6 +9,7 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.tv_shows_fragment.*
 import retrofit2.Call
 import retrofit2.Response
@@ -59,7 +60,19 @@ class TvShowsFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError { error -> Timber.d(error) }
             .doOnComplete { init() }
+            .doOnSubscribe { inProgress(true) }
+            .doFinally { inProgress(false) }
             .subscribe()
+    }
+
+    private fun inProgress(inProgress: Boolean){
+        if (inProgress){
+            tv_shows_loader.visibility = View.VISIBLE
+            tv_shows_recyclerview.visibility = View.GONE
+        } else {
+            tv_shows_loader.visibility = View.GONE
+            tv_shows_recyclerview.visibility = View.VISIBLE
+        }
     }
 
 }
