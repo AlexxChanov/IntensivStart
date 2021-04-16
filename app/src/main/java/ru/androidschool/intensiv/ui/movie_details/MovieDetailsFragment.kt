@@ -8,15 +8,16 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.movie_details_fragment.*
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.*
 import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.ui.genreStringBuilder
+import ru.androidschool.intensiv.ui.namesStringBuilder
 import ru.androidschool.intensiv.ui.setImage
-import ru.androidschool.intensiv.ui.studiosStringBuilder
 import timber.log.Timber
 
 private const val ARG_PARAM1 = "title"
@@ -49,10 +50,13 @@ class MovieDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getMoviesDetails()
+        getDetailsAndActors()
     }
 
-    private fun setData() {
+    private fun setData(result: DetailsFragmentResultsContainer) {
+        moviesDetails = result.movieDetails
+        actorsList.addAll(result.actors)
+
         movie_details_title.text = currentMovie?.title
         currentMovie?.rating?.let {
             movie_details_rating_bar.rating = it
@@ -61,8 +65,8 @@ class MovieDetailsFragment : Fragment() {
 
         currentMovie?.poster?.let { setImage(it, movie_details_iv) }
         movie_details_year_tv.text = currentMovie?.releaseDate
-        movie_details_studio_tv.text = studiosStringBuilder(moviesDetails.productionCompanies)
-        movie_details_genre_tv.text = genreStringBuilder(moviesDetails.genres)
+        movie_details_studio_tv.text = namesStringBuilder(moviesDetails.productionCompanies.map { it.name })
+        movie_details_genre_tv.text = namesStringBuilder(moviesDetails.genres.map { it.name })
         initActorsRecyclerView()
     }
 
@@ -75,26 +79,16 @@ class MovieDetailsFragment : Fragment() {
         }
     }
 
-    private fun getMoviesDetails(){
-        MovieApiClient.apiClient.getMoviesDetails(currentMovie!!.id)
-            .subscribeOn(Schedulers.io())
-            .map { moviesDetails = it}
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { error -> Timber.d(error) }
-            .doOnComplete { getActors() }
-            .subscribe()
-    }
-
-    private fun getActors(){
-        MovieApiClient.apiClient.getActors(currentMovie!!.id)
-            .subscribeOn(Schedulers.io())
-            .map { actorsList.addAll(it.cast) }
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { error -> Timber.d(error) }
-            .doOnComplete { setData() }
-            .doOnSubscribe { setInProgress(true) }
-            .doFinally { setInProgress(false) }
-            .subscribe()
+    private fun getDetailsAndActors(){
+        currentMovie?.id?.let { id ->
+            Observable.zip(MovieApiClient.apiClient.getMoviesDetails(id), MovieApiClient.apiClient.getActors(id),
+                BiFunction<MovieDetails, ActorsResponse, DetailsFragmentResultsContainer>{movieDetails, actorsResponse -> DetailsFragmentResultsContainer(movieDetails, actorsResponse.cast)})
+                .subscribeOn(Schedulers.io())
+                .doOnSubscribe { setInProgress(true) }
+                .observeOn(AndroidSchedulers.mainThread())
+                .doFinally { setInProgress(false) }
+                .subscribe({ result -> setData(result) }, {error -> Timber.e(error)})
+        }
     }
 
     private fun setInProgress(inProgress: Boolean){

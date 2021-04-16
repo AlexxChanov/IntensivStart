@@ -56,13 +56,15 @@ class TvShowsFragment : Fragment() {
     private fun getPopularTvShows(){
         MovieApiClient.apiClient.getPopularTvShows()
             .subscribeOn(Schedulers.io())
-            .map { popularTvShows = it.results }
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { error -> Timber.d(error) }
-            .doOnComplete { init() }
             .doOnSubscribe { inProgress(true) }
             .doFinally { inProgress(false) }
-            .subscribe()
+            .subscribe({ result -> setData(result.results)}, {error -> Timber.e(error)  })
+    }
+
+    private fun setData(tvShows: MutableList<TvShow>){
+        popularTvShows = tvShows
+        init()
     }
 
     private fun inProgress(inProgress: Boolean){

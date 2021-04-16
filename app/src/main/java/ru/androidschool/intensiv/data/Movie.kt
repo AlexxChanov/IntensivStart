@@ -1,9 +1,12 @@
 package ru.androidschool.intensiv.data
 
+import android.os.Build
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
+import ru.androidschool.intensiv.BuildConfig
+
 @Parcelize
 data class Movie(
     var title: String?,
@@ -32,7 +35,7 @@ data class Movie(
 
     @IgnoredOnParcel
     val poster: String
-        get() = "https://image.tmdb.org/t/p/w500$posterPath"
+        get() = "${BuildConfig.IMAGE_URL}$posterPath"
 
     @IgnoredOnParcel
     val rating: Float

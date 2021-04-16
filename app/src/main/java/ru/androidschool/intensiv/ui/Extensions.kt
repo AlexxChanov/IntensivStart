@@ -12,24 +12,13 @@ fun setImage(source: String, target: ImageView) {
         .into(target)
 }
 
-fun genreStringBuilder(genres: List<Genre>): String {
+fun namesStringBuilder(names: List<String>): String {
     val sb = StringBuilder()
 
-    for (n in genres.indices) {
-        if (n != genres.size - 1) {
-            sb.append("${genres[n].name}, ")
-        } else sb.append(genres[n].name)
-    }
-    return sb.toString()
-}
-
-fun studiosStringBuilder(productionCompanies: List<ProductionCompany>): String {
-    val sb = StringBuilder()
-
-    for (n in productionCompanies.indices) {
-        if (n != productionCompanies.size - 1) {
-            sb.append("${productionCompanies[n].name}, ")
-        } else sb.append(productionCompanies[n].name)
+    for (n in names.indices) {
+        if (n != names.size - 1) {
+            sb.append("${names[n]}, ")
+        } else sb.append(names[n])
     }
     return sb.toString()
 }

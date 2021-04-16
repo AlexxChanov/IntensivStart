@@ -68,7 +68,6 @@ class FeedFragment : Fragment() {
         movies_recycler_view.adapter = adapter.apply { addAll(listOf()) }
 
         search_toolbar.search_edit_text.afterTextChanged {
-            Timber.d(it.toString())
             if (it.toString().length > MIN_LENGTH) {
                 openSearch(it.toString())
             }
@@ -119,49 +118,22 @@ class FeedFragment : Fragment() {
         }
     }
 
-//    private fun getPlayingMovies() {
-//        MovieApiClient.apiClient.getNowPlayingMovies()
-//            .subscribeOn(Schedulers.io())
-//            .map { playingMoviesList = it.results }
-//            .doOnError { error -> Timber.d("$error") }
-//            .doOnComplete { getPopularMovies() }
-//            .subscribe()
-//    }
-//
-//    private fun getPopularMovies() {
-//        MovieApiClient.apiClient.getPopularMovies()
-//            .subscribeOn(Schedulers.io())
-//            .map { popularMoviesList = it.results }
-//            .doOnError { error -> Timber.d(error) }
-//            .doOnComplete { getUpcomingMovies() }
-//            .subscribe()
-//    }
-//
-//    private fun getUpcomingMovies() {
-//        MovieApiClient.apiClient.getUpcomingMovies()
-//            .subscribeOn(Schedulers.io())
-//            .map { upcomingMoviesList = it.results }
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .doOnError { error -> Timber.d(error) }
-//            .doOnComplete { initRecyclers() }
-//            .subscribe()
-//    }
-
     private fun zipRequestsFunction3(){
         Observable.zip(MovieApiClient.apiClient.getUpcomingMovies(), MovieApiClient.apiClient.getPopularMovies(), MovieApiClient.apiClient.getNowPlayingMovies(),
         Function3<MovieResponse, MovieResponse, MovieResponse, FeedFragmentDataContainer>{
-            upcoming, popular, nowPlaying ->  FeedFragmentDataContainer(upcoming.results, popular.results, nowPlaying.results)
-            })
+            upcoming, popular, nowPlaying ->  FeedFragmentDataContainer(upcoming.results, popular.results, nowPlaying.results) })
             .subscribeOn(Schedulers.io())
             .doOnSubscribe { setInProgress(true) }
-            .map { upcomingMoviesList = it.upcomingMovies
-            popularMoviesList = it.popularMovies
-            playingMoviesList = it.playingMovies}
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { error -> Timber.d(error) }
-            .doOnComplete { initRecyclers() }
             .doFinally { setInProgress(false) }
-            .subscribe()
+            .subscribe({result -> initResults(result)}, { error -> Timber.e(error)})
+    }
+
+    private fun initResults(results: FeedFragmentDataContainer){
+        upcomingMoviesList = results.upcomingMovies
+        popularMoviesList =  results.popularMovies
+        playingMoviesList =  results.playingMovies
+        initRecyclers()
     }
 
     private fun setInProgress(inProgress: Boolean){

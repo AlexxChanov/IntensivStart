@@ -16,7 +16,9 @@ import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.search_toolbar.*
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.data.MovieResponse
 import ru.androidschool.intensiv.network.MovieApiClient
+import ru.androidschool.intensiv.ui.SearchBar
 import ru.androidschool.intensiv.ui.feed.FeedFragment.Companion.KEY_SEARCH
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -26,7 +28,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private var searchingText: String? = null
     private var searchingMovieslist = mutableListOf<Movie>()
-    lateinit var filterSubject: Observable<String>
 
     private val adapter by lazy {
         GroupAdapter<GroupieViewHolder>()
@@ -45,6 +46,14 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         search_toolbar.setText(searchingText)
     }
 
+    private fun handleMovieSearching(){
+        search_toolbar.getSearchingMovies()
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { setInProgress(true) }
+            .doFinally { setInProgress(false) }
+            .subscribe({result -> setData(result)},{ error -> Timber.e(error)})
+    }
+
     private fun init() {
         movies_search_recycler_view.adapter = adapter.apply { addAll(listOf()) }
 
@@ -54,30 +63,15 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         movies_search_recycler_view.adapter = adapter.apply { addAll(moviesList) }
     }
 
-    private fun handleMovieSearching() {
-        filterSubject = PublishSubject.create(ObservableOnSubscribe<String> { emitter ->
-            search_edit_text.doAfterTextChanged{
-                emitter.onNext(it.toString())
-            }
-        })
 
-        filterSubject
-            .subscribeOn(Schedulers.io())
-            .map { it.trim() }
-            .filter{it.length > 3}
-            .debounce(500, TimeUnit.MILLISECONDS)
-            .flatMap{ MovieApiClient.apiClient.searchMovie(it) }
-            .observeOn(AndroidSchedulers.mainThread())
-            .map {
-                searchingMovieslist.clear()
-                adapter.clear()
-                searchingMovieslist = it.results
-                init()
-                adapter.notifyDataSetChanged()
-                setInProgress(false)
-                Timber.d(it.results.size.toString()) }
-            .doOnSubscribe { setInProgress(true) }
-            .subscribe({},{ error -> Timber.d(error)})
+
+    private fun setData(movies : MovieResponse){
+        searchingMovieslist.clear()
+        adapter.clear()
+        searchingMovieslist = movies.results
+        init()
+        adapter.notifyDataSetChanged()
+        setInProgress(false)
     }
 
     private fun setInProgress(inProgress: Boolean){
