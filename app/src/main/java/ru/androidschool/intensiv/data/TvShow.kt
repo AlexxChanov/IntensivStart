@@ -3,6 +3,7 @@ package ru.androidschool.intensiv.data
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
+import ru.androidschool.intensiv.BuildConfig
 
 @Parcelize
 data class TvShow(
@@ -19,7 +20,7 @@ data class TvShow(
     val voteAverage: Float
 ) : Parcelable {
     var poster: String = ""
-        get() = "https://image.tmdb.org/t/p/w500$posterPath"
+        get() = "${BuildConfig.IMAGE_URL}$posterPath"
 
     val rating: Float
         get() = voteAverage.div(2).toFloat()

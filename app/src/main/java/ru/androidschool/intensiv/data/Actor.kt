@@ -1,6 +1,8 @@
 package ru.androidschool.intensiv.data
 
+import android.os.Build
 import com.google.gson.annotations.SerializedName
+import ru.androidschool.intensiv.BuildConfig
 
 data class Actor(
     val name: String,
@@ -8,5 +10,5 @@ data class Actor(
     val profilePath: String
 ) {
     var profile: String = ""
-        get() = "https://image.tmdb.org/t/p/w500$profilePath"
+        get() = "${BuildConfig.IMAGE_URL}$profilePath"
 }

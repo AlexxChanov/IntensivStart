@@ -27,7 +27,6 @@
                 android:layout_gravity="center"
                 android:visibility="invisible"/>
 
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/movies_recycler_view"
                 android:layout_width="match_parent"

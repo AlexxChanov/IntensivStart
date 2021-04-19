@@ -85,7 +85,7 @@ dependencies {
     implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: "$rootProject.logginInterceptorVersion"
 
     // RxJava2 Dependencies
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.rxJavaAdapterVersion"
 }
