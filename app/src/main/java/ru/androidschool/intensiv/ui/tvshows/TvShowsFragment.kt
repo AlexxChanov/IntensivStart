@@ -7,12 +7,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.tv_shows_fragment.*
+import retrofit2.Call
+import retrofit2.Response
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MockRepository
-
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import ru.androidschool.intensiv.data.*
+import ru.androidschool.intensiv.network.MovieApiClient
+import timber.log.Timber
 
 class TvShowsFragment : Fragment() {
 
@@ -20,16 +24,10 @@ class TvShowsFragment : Fragment() {
         GroupAdapter<GroupieViewHolder>()
     }
 
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    lateinit var popularTvShows: MutableList<TvShow>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -43,23 +41,40 @@ class TvShowsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getPopularTvShows()
+    }
 
+    private fun init() {
         tv_shows_recyclerview.adapter = adapter.apply { addAll(listOf()) }
 
-        val moviesList = MockRepository.getMovies().map {
-                 TvShowCardContainer(it)
-             }
+        val moviesList = popularTvShows.map {
+            TvShowCardContainer(it)
+        }
         tv_shows_recyclerview.adapter = adapter.apply { addAll(moviesList) }
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            TvShowsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun getPopularTvShows(){
+        MovieApiClient.apiClient.getPopularTvShows()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { inProgress(true) }
+            .doFinally { inProgress(false) }
+            .subscribe({ result -> setData(result.results)}, {error -> Timber.e(error)  })
     }
+
+    private fun setData(tvShows: MutableList<TvShow>){
+        popularTvShows = tvShows
+        init()
+    }
+
+    private fun inProgress(inProgress: Boolean){
+        if (inProgress){
+            tv_shows_loader.visibility = View.VISIBLE
+            tv_shows_recyclerview.visibility = View.GONE
+        } else {
+            tv_shows_loader.visibility = View.GONE
+            tv_shows_recyclerview.visibility = View.VISIBLE
+        }
+    }
+
 }
