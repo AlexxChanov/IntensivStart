@@ -12,6 +12,6 @@ class ProfileAdapter(fragment: Fragment, private val itemsCount: Int) :
     }
 
     override fun createFragment(position: Int): Fragment {
-        return WatchlistFragment.newInstance()
+        return WatchlistFragment()
     }
 }
