@@ -15,8 +15,7 @@ class MovieFinderApp : Application() {
         instance = this
         initDebugTools()
         repository = MovieApiClient
-        database = Room.databaseBuilder(this, AppDatabase::class.java, "database")
-            .build()
+        database = Room.databaseBuilder(this, AppDatabase::class.java, "database").build()
     }
     private fun initDebugTools() {
         if (BuildConfig.DEBUG) {

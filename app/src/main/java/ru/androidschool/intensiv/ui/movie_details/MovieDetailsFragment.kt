@@ -1,6 +1,7 @@
 package ru.androidschool.intensiv.ui.movie_details
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,11 +62,15 @@ class MovieDetailsFragment : Fragment() {
     }
 
     private fun init() {
+        isSaved = false
         currentMovie?.let { checkIfSaved(it) }
 
         movie_details_like_iv.setOnClickListener {
+            Timber.d("1")
             if (isSaved != null){
+                Timber.d("2")
                 if (isSaved!!) {
+                    Timber.d("3")
                     setLiked(!isSaved!!)
                     currentMovie?.let { movie -> deleteDataFromDB(movie) }
                 } else {
@@ -125,33 +130,57 @@ class MovieDetailsFragment : Fragment() {
     }
 
      private fun checkIfSaved(movie: Movie) {
-       Observable.just(dao?.getLikedById(movie.id))
-           .subscribeOn(Schedulers.io())
-           .observeOn(AndroidSchedulers.mainThread())
-           .subscribe({ result -> handleCheckingResult(result) }, { error -> })
+         Timber.d(database.toString())
+         Timber.d((dao == null).toString())
+
+         dao!!.getLikedById(movie.id)
+             .subscribeOn(Schedulers.io())
+             .observeOn(AndroidSchedulers.mainThread())
+             .subscribe({ result ->
+                 Timber.d("sbsc1")
+
+                 handleCheckingResult(result) }, { error ->
+                 Timber.d("sbsc2")
+
+                 error.message?.let {
+                     handleError(
+                         it
+                     )
+                 } })
         }
 
+    private fun handleError(message: String){
+        Timber.d(message)
+    }
+
     private fun handleCheckingResult(likedMovie: LikedMovie?){
+        Timber.d("h1")
         if (likedMovie == null){
-            isSaved = false
+            Timber.d("h2")
+
             setLiked(false)
         } else {
-            isSaved = true
+            Timber.d("h3")
             setLiked(true)
         }
     }
 
     private fun setLiked(isLiked: Boolean){
+        Timber.d(isLiked.toString())
         if (isLiked){
+            isSaved = true
             movie_details_like_iv.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_like_filled))
         } else {
             movie_details_like_iv.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_like))
+            isSaved = false
+
         }
     }
 
     private fun deleteDataFromDB(movie: Movie) {
-            Observable.just(dao?.getLikedById(movie.id))
+            Observable.empty<Movie>()
                 .subscribeOn(Schedulers.io())
+                .flatMap { dao?.getLikedById(movie.id) }
                 .doOnNext {
                     if (it != null) {
                         dao?.delete(it)
@@ -163,10 +192,12 @@ class MovieDetailsFragment : Fragment() {
 
     private fun writeToDb(movie: Movie) {
         val likedMovie  = LikedMovie(
-        0, movie.id, movie.title.toString(), movie.voteAverage, movie.posterPath, movie.adult, movie.overview, movie.releaseDate, movie.genreIds, movie.originalTitle, movie.originalLanguage, movie.backdropPath, movie.popularity, movie.voteCount, movie.video)
+        0, movie.id, movie.title.toString(), movie.voteAverage, movie.posterPath, movie.adult, movie.overview, movie.releaseDate,
+            movie.genreIds as ArrayList<Int>, movie.originalTitle, movie.originalLanguage, movie.backdropPath, movie.popularity, movie.voteCount, movie.video)
 
-        Observable.just(dao?.insertLikedMovie(likedMovie))
+        Observable.empty<Movie>()
             .subscribeOn(Schedulers.io())
+            .flatMap { Observable.just(dao?.insertLikedMovie(likedMovie)) }
             .subscribe()
     }
 }
