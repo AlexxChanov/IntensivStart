@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
@@ -51,7 +52,6 @@ class MovieDetailsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.movie_details_fragment, container, false)
     }
 
@@ -66,14 +66,12 @@ class MovieDetailsFragment : Fragment() {
         currentMovie?.let { checkIfSaved(it) }
 
         movie_details_like_iv.setOnClickListener {
-            Timber.d("1")
             if (isSaved != null){
-                Timber.d("2")
                 if (isSaved!!) {
-                    Timber.d("3")
                     setLiked(!isSaved!!)
                     currentMovie?.let { movie -> deleteDataFromDB(movie) }
                 } else {
+
                     setLiked(!isSaved!!)
                     currentMovie?.let { movie -> writeToDb(movie) }
                 }
@@ -133,20 +131,21 @@ class MovieDetailsFragment : Fragment() {
          Timber.d(database.toString())
          Timber.d((dao == null).toString())
 
-         dao!!.getLikedById(movie.id)
-             .subscribeOn(Schedulers.io())
-             .observeOn(AndroidSchedulers.mainThread())
-             .subscribe({ result ->
-                 Timber.d("sbsc1")
+         dao?.let { dao ->
+             dao.getLikedById(movie.id)
+                 .subscribeOn(Schedulers.io())
+                 .observeOn(AndroidSchedulers.mainThread())
+                 .subscribe({ result ->
 
-                 handleCheckingResult(result) }, { error ->
-                 Timber.d("sbsc2")
+                     handleCheckingResult(result) }, { error ->
 
-                 error.message?.let {
-                     handleError(
-                         it
-                     )
-                 } })
+                     error.message?.let {
+                         handleError(
+                             it
+                         )
+                     } })
+         }
+
         }
 
     private fun handleError(message: String){
@@ -154,50 +153,52 @@ class MovieDetailsFragment : Fragment() {
     }
 
     private fun handleCheckingResult(likedMovie: LikedMovie?){
-        Timber.d("h1")
         if (likedMovie == null){
-            Timber.d("h2")
 
             setLiked(false)
         } else {
-            Timber.d("h3")
             setLiked(true)
         }
     }
 
     private fun setLiked(isLiked: Boolean){
-        Timber.d(isLiked.toString())
         if (isLiked){
             isSaved = true
             movie_details_like_iv.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_like_filled))
         } else {
             movie_details_like_iv.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_like))
             isSaved = false
-
         }
     }
 
     private fun deleteDataFromDB(movie: Movie) {
-            Observable.empty<Movie>()
-                .subscribeOn(Schedulers.io())
-                .flatMap { dao?.getLikedById(movie.id) }
-                .doOnNext {
-                    if (it != null) {
-                        dao?.delete(it)
+            dao?.let{ dao ->
+                dao.getLikedById(movie.id)
+                    .subscribeOn(Schedulers.io())
+                    .doOnNext { movie ->
+                        if (movie != null) {
+                            dao.delete(movie)
+                        }
                     }
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ result -> }, { error ->})
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe()
+            }
     }
 
     private fun writeToDb(movie: Movie) {
-        val likedMovie  = LikedMovie(
-        0, movie.id, movie.title.toString(), movie.voteAverage, movie.posterPath, movie.adult, movie.overview, movie.releaseDate,
+
+        val likedMovie  = LikedMovie(0, movie.id, movie.title.toString(), movie.voteAverage, movie.posterPath, movie.adult, movie.overview, movie.releaseDate,
             movie.genreIds as ArrayList<Int>, movie.originalTitle, movie.originalLanguage, movie.backdropPath, movie.popularity, movie.voteCount, movie.video)
 
-        Observable.empty<Movie>()
+            insertMovie(likedMovie)
             .subscribeOn(Schedulers.io())
-            .flatMap { Observable.just(dao?.insertLikedMovie(likedMovie)) }
             .subscribe()
     }
-}
+
+    private fun insertMovie(movie: LikedMovie) : Completable {
+        return Completable.fromAction {
+                dao?.insertLikedMovie(movie)
+            }
+        }
+    }
+
