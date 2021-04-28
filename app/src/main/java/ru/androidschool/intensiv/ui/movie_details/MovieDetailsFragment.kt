@@ -136,16 +136,9 @@ class MovieDetailsFragment : Fragment() {
                  .subscribeOn(Schedulers.io())
                  .observeOn(AndroidSchedulers.mainThread())
                  .subscribe({ result ->
-
                      handleCheckingResult(result) }, { error ->
-
-                     error.message?.let {
-                         handleError(
-                             it
-                         )
-                     } })
+                     error.message?.let { handleError(it) } })
          }
-
         }
 
     private fun handleError(message: String){
