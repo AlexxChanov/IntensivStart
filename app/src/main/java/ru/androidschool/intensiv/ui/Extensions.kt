@@ -2,8 +2,6 @@ package ru.androidschool.intensiv.ui
 
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
-import ru.androidschool.intensiv.data.Genre
-import ru.androidschool.intensiv.data.ProductionCompany
 import java.lang.StringBuilder
 
 fun setImage(source: String, target: ImageView) {

@@ -10,11 +10,9 @@ import androidx.room.Room
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import ru.androidschool.intensiv.database.AppDatabase
 
-
 class MainActivity : AppCompatActivity() {
 
     private var database: AppDatabase? = null
-
 
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {

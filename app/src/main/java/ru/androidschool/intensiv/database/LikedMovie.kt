@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class LikedMovie (
+data class LikedMovie(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
     val movieId: Int,

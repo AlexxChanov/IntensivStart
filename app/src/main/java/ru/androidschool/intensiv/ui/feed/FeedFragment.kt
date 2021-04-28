@@ -118,26 +118,26 @@ class FeedFragment : Fragment() {
         }
     }
 
-    private fun zipRequestsFunction3(){
+    private fun zipRequestsFunction3() {
         Observable.zip(MovieApiClient.apiClient.getUpcomingMovies(), MovieApiClient.apiClient.getPopularMovies(), MovieApiClient.apiClient.getNowPlayingMovies(),
-        Function3<MovieResponse, MovieResponse, MovieResponse, FeedFragmentDataContainer>{
-            upcoming, popular, nowPlaying ->  FeedFragmentDataContainer(upcoming.results, popular.results, nowPlaying.results) })
+        Function3<MovieResponse, MovieResponse, MovieResponse, FeedFragmentDataContainer> {
+            upcoming, popular, nowPlaying -> FeedFragmentDataContainer(upcoming.results, popular.results, nowPlaying.results) })
             .subscribeOn(Schedulers.io())
             .doOnSubscribe { setInProgress(true) }
             .observeOn(AndroidSchedulers.mainThread())
             .doFinally { setInProgress(false) }
-            .subscribe({result -> initResults(result)}, { error -> Timber.e(error)})
+            .subscribe({ result -> initResults(result) }, { error -> Timber.e(error) })
     }
 
-    private fun initResults(results: FeedFragmentDataContainer){
+    private fun initResults(results: FeedFragmentDataContainer) {
         upcomingMoviesList = results.upcomingMovies
-        popularMoviesList =  results.popularMovies
-        playingMoviesList =  results.playingMovies
+        popularMoviesList = results.popularMovies
+        playingMoviesList = results.playingMovies
         initRecyclers()
     }
 
-    private fun setInProgress(inProgress: Boolean){
-        if (inProgress){
+    private fun setInProgress(inProgress: Boolean) {
+        if (inProgress) {
             feed_fragment_loader.visibility = View.VISIBLE
             movies_recycler_view.visibility = View.GONE
         } else {

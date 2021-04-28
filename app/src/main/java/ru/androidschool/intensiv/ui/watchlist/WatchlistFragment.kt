@@ -43,21 +43,19 @@ class WatchlistFragment : Fragment() {
     }
 
     private fun getLikedMovies() {
-        dao?.let{ dao ->
+        dao?.let { dao ->
             dao.getAllLiked()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ result -> handleMoviesResult(result) }, { error -> Timber.d(error.message)} )
+                .subscribe({ result -> handleMoviesResult(result) }, { error -> Timber.d(error.message) })
         }
     }
 
-    private fun handleMoviesResult( result : List<LikedMovie>?){
+    private fun handleMoviesResult(result: List<LikedMovie>?) {
         result?.let {
             adapter.addAll(it.map {
-                MoviePreviewItem(Movie(it.title,it.voteAverage, it.posterPath, it.adult, it.overview, it.releaseDate, it.genreIds, it.id.toInt(), it.originalTitle, it.originalLanguage, it.backdropPath, it.popularity, it.voteCount, it.video)
-                    , { Timber.d("Movie clicked") })
+                MoviePreviewItem(Movie(it.title, it.voteAverage, it.posterPath, it.adult, it.overview, it.releaseDate, it.genreIds, it.id.toInt(), it.originalTitle, it.originalLanguage, it.backdropPath, it.popularity, it.voteCount, it.video), { Timber.d("Movie clicked") })
             })
         }
-
     }
 }
