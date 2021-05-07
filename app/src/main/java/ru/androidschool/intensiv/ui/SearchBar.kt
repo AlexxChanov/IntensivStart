@@ -10,15 +10,12 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.search_toolbar.*
 import kotlinx.android.synthetic.main.search_toolbar.view.*
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.MovieResponse
-import ru.androidschool.intensiv.network.MovieApiClient
-import timber.log.Timber
+import ru.androidschool.intensiv.domain.network.MovieApiClient
 import java.util.concurrent.TimeUnit
 
 class SearchBar @JvmOverloads constructor(

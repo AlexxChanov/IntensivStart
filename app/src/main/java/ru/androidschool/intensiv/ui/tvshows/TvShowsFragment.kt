@@ -5,30 +5,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.tv_shows_fragment.*
-import retrofit2.Call
-import retrofit2.Response
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.*
-import ru.androidschool.intensiv.network.MovieApiClient
+import ru.androidschool.intensiv.domain.network.MovieApiClient
 import timber.log.Timber
+import java.lang.IllegalArgumentException
 
 class TvShowsFragment : Fragment() {
 
     private val adapter by lazy {
         GroupAdapter<GroupieViewHolder>()
     }
+    private lateinit var tvShowsViewModel: TvShowsViewModel
 
     lateinit var popularTvShows: MutableList<TvShow>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,7 +39,19 @@ class TvShowsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getPopularTvShows()
+
+        val tvShowsViewModelFactory = TvShowsViewModelFactory(MovieApiClient)
+
+        tvShowsViewModel = ViewModelProvider(requireActivity(), tvShowsViewModelFactory).get(TvShowsViewModel::class.java)
+
+        tvShowsViewModel.tvShowsLiveData.observe(requireActivity(), Observer { list ->
+            popularTvShows = list as MutableList<TvShow>
+            setData(list)
+            init()
+        })
+        tvShowsViewModel.tvShowsLoadingStateLiveDate.observe(requireActivity(), Observer {
+            onTvShowsLoadingStateChanged(it)
+        })
     }
 
     private fun init() {
@@ -53,22 +63,12 @@ class TvShowsFragment : Fragment() {
         tv_shows_recyclerview.adapter = adapter.apply { addAll(moviesList) }
     }
 
-    private fun getPopularTvShows(){
-        MovieApiClient.apiClient.getPopularTvShows()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { inProgress(true) }
-            .doFinally { inProgress(false) }
-            .subscribe({ result -> setData(result.results)}, {error -> Timber.e(error)  })
-    }
-
-    private fun setData(tvShows: MutableList<TvShow>){
+    private fun setData(tvShows: MutableList<TvShow>) {
         popularTvShows = tvShows
-        init()
     }
 
-    private fun inProgress(inProgress: Boolean){
-        if (inProgress){
+    private fun inProgress(inProgress: Boolean) {
+        if (inProgress) {
             tv_shows_loader.visibility = View.VISIBLE
             tv_shows_recyclerview.visibility = View.GONE
         } else {
@@ -77,4 +77,16 @@ class TvShowsFragment : Fragment() {
         }
     }
 
+    private fun onTvShowsLoadingStateChanged(state: DataLoadingState) {
+        if (state == DataLoadingState.LOADING) inProgress(true) else inProgress(false)
+    }
+}
+
+class TvShowsViewModelFactory(private val repository: MovieApiClient) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(TvShowsViewModel::class.java)) {
+            return TvShowsViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

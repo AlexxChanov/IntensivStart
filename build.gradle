@@ -55,4 +55,7 @@ ext {
     rxJavaVersion = '2.2.6'
     rxAndroidVersion = '2.1.1'
     rxJavaAdapterVersion = '2.4.0'
+
+    roomVersion = '2.2.5'
+
 }

@@ -1,4 +1,4 @@
-package ru.androidschool.intensiv.network
+package ru.androidschool.intensiv.domain.network
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -8,7 +8,6 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.androidschool.intensiv.BuildConfig
-import ru.androidschool.intensiv.network.MovieApiClient.BASE_URL
 import java.util.*
 
 object MovieApiClient {

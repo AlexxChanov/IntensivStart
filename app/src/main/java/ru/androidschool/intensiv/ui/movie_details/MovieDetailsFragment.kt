@@ -15,7 +15,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.movie_details_fragment.*
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.*
-import ru.androidschool.intensiv.network.MovieApiClient
+import ru.androidschool.intensiv.domain.network.MovieApiClient
 import ru.androidschool.intensiv.ui.namesStringBuilder
 import ru.androidschool.intensiv.ui.setImage
 import timber.log.Timber

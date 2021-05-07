@@ -2,26 +2,17 @@ package ru.androidschool.intensiv.ui.search
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
-import io.reactivex.Observable
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.feed_header.*
 import kotlinx.android.synthetic.main.fragment_search.*
-import kotlinx.android.synthetic.main.search_toolbar.*
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.data.MovieResponse
-import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.ui.SearchBar
 import ru.androidschool.intensiv.ui.feed.FeedFragment.Companion.KEY_SEARCH
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
