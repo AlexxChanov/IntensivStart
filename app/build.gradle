@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-
+apply plugin: 'kotlin-kapt'
 apply from: "../ktlint.gradle"
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -88,4 +88,9 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxJavaVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroidVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.rxJavaAdapterVersion"
+    implementation "android.arch.persistence.room:rxjava2:1.1.1"
+
+    // Room
+    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
+    kapt "android.arch.persistence.room:compiler:$rootProject.roomVersion"
 }

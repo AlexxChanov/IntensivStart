@@ -1,6 +1,5 @@
 package ru.androidschool.intensiv.data
 
-import android.os.Build
 import com.google.gson.annotations.SerializedName
 import ru.androidschool.intensiv.BuildConfig
 

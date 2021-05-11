@@ -11,8 +11,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.tv_shows_fragment.*
-import retrofit2.Call
-import retrofit2.Response
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.*
 import ru.androidschool.intensiv.network.MovieApiClient
@@ -53,22 +51,22 @@ class TvShowsFragment : Fragment() {
         tv_shows_recyclerview.adapter = adapter.apply { addAll(moviesList) }
     }
 
-    private fun getPopularTvShows(){
+    private fun getPopularTvShows() {
         MovieApiClient.apiClient.getPopularTvShows()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { inProgress(true) }
             .doFinally { inProgress(false) }
-            .subscribe({ result -> setData(result.results)}, {error -> Timber.e(error)  })
+            .subscribe({ result -> setData(result.results) }, { error -> Timber.e(error) })
     }
 
-    private fun setData(tvShows: MutableList<TvShow>){
+    private fun setData(tvShows: MutableList<TvShow>) {
         popularTvShows = tvShows
         init()
     }
 
-    private fun inProgress(inProgress: Boolean){
-        if (inProgress){
+    private fun inProgress(inProgress: Boolean) {
+        if (inProgress) {
             tv_shows_loader.visibility = View.VISIBLE
             tv_shows_recyclerview.visibility = View.GONE
         } else {
@@ -76,5 +74,4 @@ class TvShowsFragment : Fragment() {
             tv_shows_recyclerview.visibility = View.VISIBLE
         }
     }
-
 }
