@@ -1,5 +1,6 @@
 package ru.androidschool.intensiv.ui.tvshows
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -12,8 +13,15 @@ import timber.log.Timber
 
 class TvShowsViewModel(private val repository: MovieApiClient) : ViewModel() {
 
-    val tvShowsLiveData = MutableLiveData<List<TvShow>>()
-    val tvShowsLoadingStateLiveDate = MutableLiveData<DataLoadingState>()
+   private val _tvShowsLiveData = MutableLiveData<List<TvShow>>()
+    val tvShowsLiveData : LiveData<List<TvShow>>
+        get() = _tvShowsLiveData
+
+
+    private val _tvShowsLoadingStateLiveDate = MutableLiveData<DataLoadingState>()
+    val tvShowsLoadingStateLiveDate : LiveData<DataLoadingState>
+        get() = _tvShowsLoadingStateLiveDate
+
     val compositeDisposable = CompositeDisposable()
 
     init {
@@ -25,12 +33,12 @@ class TvShowsViewModel(private val repository: MovieApiClient) : ViewModel() {
             MovieApiClient.apiClient.getPopularTvShows()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { tvShowsLoadingStateLiveDate.value = DataLoadingState.LOADING }
+                .doOnSubscribe { _tvShowsLoadingStateLiveDate.value = DataLoadingState.LOADING }
                 .subscribe({ result ->
-                    tvShowsLiveData.value = result.results
-                    tvShowsLoadingStateLiveDate.value = DataLoadingState.LOADED
+                    _tvShowsLiveData.value = result.results
+                    _tvShowsLoadingStateLiveDate.value = DataLoadingState.LOADED
                 }, {error ->
-                    tvShowsLoadingStateLiveDate.value = DataLoadingState.ERROR
+                    _tvShowsLoadingStateLiveDate.value = DataLoadingState.ERROR
                     Timber.e(error)  })
         )
     }
