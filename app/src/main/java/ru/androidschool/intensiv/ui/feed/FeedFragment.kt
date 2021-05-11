@@ -19,7 +19,7 @@ import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.FeedFragmentDataContainer
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.data.MovieResponse
-import ru.androidschool.intensiv.network.MovieApiClient
+import ru.androidschool.intensiv.domain.network.MovieApiClient
 import ru.androidschool.intensiv.ui.afterTextChanged
 import timber.log.Timber
 

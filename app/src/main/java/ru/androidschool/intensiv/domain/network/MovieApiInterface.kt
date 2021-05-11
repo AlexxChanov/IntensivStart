@@ -1,4 +1,4 @@
-package ru.androidschool.intensiv.network
+package ru.androidschool.intensiv.domain.network
 
 import io.reactivex.Observable
 import retrofit2.http.GET
