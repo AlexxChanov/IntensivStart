@@ -1,6 +1,5 @@
 package ru.androidschool.intensiv.data
 
-import android.os.Build
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.IgnoredOnParcel

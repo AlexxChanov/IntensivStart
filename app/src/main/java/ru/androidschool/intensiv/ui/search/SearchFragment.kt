@@ -2,27 +2,18 @@ package ru.androidschool.intensiv.ui.search
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
-import io.reactivex.Observable
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.feed_header.*
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.search_toolbar.*
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.data.MovieResponse
-import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.ui.SearchBar
 import ru.androidschool.intensiv.ui.feed.FeedFragment.Companion.KEY_SEARCH
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
-
 
 class SearchFragment : Fragment(R.layout.fragment_search) {
 
@@ -46,12 +37,12 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         search_toolbar.setText(searchingText)
     }
 
-    private fun handleMovieSearching(){
+    private fun handleMovieSearching() {
         search_toolbar.getSearchingMovies()
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { setInProgress(true) }
             .doFinally { setInProgress(false) }
-            .subscribe({result -> setData(result)},{ error -> Timber.e(error)})
+            .subscribe({ result -> setData(result) }, { error -> Timber.e(error) })
     }
 
     private fun init() {
@@ -63,9 +54,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         movies_search_recycler_view.adapter = adapter.apply { addAll(moviesList) }
     }
 
-
-
-    private fun setData(movies : MovieResponse){
+    private fun setData(movies: MovieResponse) {
         searchingMovieslist.clear()
         adapter.clear()
         searchingMovieslist = movies.results
@@ -74,8 +63,8 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         setInProgress(false)
     }
 
-    private fun setInProgress(inProgress: Boolean){
-        if (inProgress){
+    private fun setInProgress(inProgress: Boolean) {
+        if (inProgress) {
             search_fragment_loader.visibility = View.VISIBLE
             movies_search_recycler_view.visibility = View.GONE
         } else {
